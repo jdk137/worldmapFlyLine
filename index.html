@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Worldmap</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- styles -->
+    <!-- <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/themes/base/jquery-ui.css" /> -->
+    <link  href="css/bootstrap.min.css" rel="stylesheet"/>
+    <link  href="css/styles.css" rel="stylesheet"/>
+
+    <!-- 顶点着色器 -->
+    <script id="vertex-shader" type="x-shader/x-vertex">
+        uniform float start;
+        uniform float end;
+        uniform float time;
+        uniform float size;
+        uniform bool direction;
+
+        varying vec3 iPosition;
+        varying float pointsize;
+
+        void main(){
+            iPosition = vec3(position);
+
+            float x = position.x;
+            pointsize = 0.0;
+            float ratio = (x - start) / (end - start);
+            if (!direction) {
+              ratio = 1.0 - ratio;
+            }
+            if(ratio > time && ratio < (time + size)){
+              pointsize = (ratio - time) / size;
+
+            }
+            if (pointsize >= .99) {
+              pointsize *= 1.5;
+            }
+            gl_PointSize = pointsize * 3.0;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0);
+        }
+    </script>
+
+    <script id="fragment-shader-7" type="x-shader/x-fragment">
+        uniform float start;
+        uniform float end;
+        uniform float time;
+        uniform float size;
+        uniform bool direction;
+
+        varying vec3 iPosition;
+        varying float pointsize;
+
+        void main( void ) {
+            vec4 color;
+
+            if(pointsize < 0.01){
+                discard;
+            }else {
+                color = vec4(1.0, 1.0, 1.0, pointsize * 0.8);
+            }
+            gl_FragColor = color;
+        }
+    </script>
+
+  </head>
+
+  <body data-spy="scroll" data-target=".bs-docs-sidebar">
+
+    <!-- Main content
+    ================================================== -->
+    <div class="container2" id="main_continer">
+    	<div id="worldmap"></div>
+    </div>
+       
+    <!-- Footer
+    ================================================== -->
+    <footer class="footer">
+      <div class="navbar navbar-fixed-bottom">
+      	<div class="navbar-inner">
+          <div class="container">
+            <ul class="nav">
+              <li id="country-name"></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    
+	<script src="vendor/jquery-3.3.1.min.js"></script>
+    
+    <script src="vendor/d3.min.js"></script>
+    <!-- <script src="vendor/three.min.js"></script> -->
+    <!-- <script src="vendor/three.js"></script> -->
+    <script src="vendor/three.v69.js"></script>
+
+    <script type="text/javascript" src="vendor/stats.js"></script>
+    <script type="text/javascript" src="vendor/dat.gui.js"></script>
+    <script type="text/javascript" src="vendor/OrbitControls.js"></script>
+    
+    <script src="vendor/d3-threeD.js"></script>
+    <script src="vendor/Detector.js"></script>
+    
+    <script src="js/map.js" type="text/javascript"></script>
+
+  </body>
+</html>
+
